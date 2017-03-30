@@ -20,6 +20,10 @@ public partial class DragonStore<T> : IDragonStore
         get { return Dragon.Instance.Dispachter; }
     }
 
+    public T PrevValue
+    {
+        get { return _prevValue; }
+    }
 
     public T Value
     {
@@ -35,7 +39,7 @@ public partial class DragonStore<T> : IDragonStore
         }
     }
 
-    public T _prevValue;
+    private T _prevValue;
     private T _value;
 
     public DragonStore(T value)

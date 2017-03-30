@@ -9,7 +9,8 @@ namespace _scripts.Model
         public DragonStore<string> GameId { get; private set; }
         public DragonStore<Profile> CurrentProfile { get; private set; }
 
-        public Queue<Profile> Profiles { get; private set; }
+        public DragonStore<Queue<Profile>> Profiles { get; private set; }
+        public DragonStore<List<Profile>> AllProfiles { get; private set; }
         private List<int> Swipes { get; set; }
         private DragonStore<int> Round { get; set; }
 
@@ -28,7 +29,8 @@ namespace _scripts.Model
             MaxTotal = new DragonStore<int>(0);
 
             Swipes = new List<int>();
-            Profiles = new Queue<Profile>();
+            Profiles = new DragonStore<Queue<Profile>>(new Queue<Profile>());
+            AllProfiles = new DragonStore<List<Profile>>(new List<Profile>());
 
             // Get Initial Server Data
             Server.Instance.FetchProfiles("start", Round.Value);
@@ -38,9 +40,10 @@ namespace _scripts.Model
         public void NewProfiles(JObject json)
         {
             GameId.Value = json["id"].ToString();
-            Profiles = json["profiles"].ToObject<Queue<Profile>>();
+            Profiles.Value = json["profiles"].ToObject<Queue<Profile>>();
+            AllProfiles.Value.AddRange(json["profiles"].ToObject<List<Profile>>());
 
-            CurrentProfile.Value = Profiles.Dequeue();
+            CurrentProfile.Value = Profiles.Value.Dequeue();
         }
 
         [Event(Event = Events.Min)]
@@ -76,7 +79,7 @@ namespace _scripts.Model
             }
             else
             {
-                CurrentProfile.Value = Profiles.Dequeue();
+                CurrentProfile.Value = Profiles.Value.Dequeue();
             }
         }
     }

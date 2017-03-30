@@ -1,4 +1,6 @@
-﻿using DG.Tweening;
+﻿using System.Collections;
+using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using _scripts.Model;
@@ -14,6 +16,27 @@ namespace _scripts
         public Text Counter;
         public Text MinText;
         public Text MaxText;
+
+        private void Start()
+        {
+#if UNITY_EDITOR
+            // FOR TESTING ONLY
+            //            StartCoroutine(Temp());
+#endif
+        }
+
+        private IEnumerator Temp()
+        {
+            yield return new WaitForSeconds(0);
+            if (Random.Range(0, 2) == 0)
+            {
+                SwipeLeft();
+            }
+            else
+            {
+                SwipeRight();
+            }
+        }
 
         public void SetProfile(Profile profile, int valueTotal)
         {
