@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace _scripts.Tutorial
 {
-    public abstract class TutorialComponent : DragonBehaviour, IDragonAnimator
+    public abstract class TutorialComponent : Card, IDragonAnimator
     {
         public PressGesture PressGesture;
 
@@ -14,16 +14,16 @@ namespace _scripts.Tutorial
             PressGesture.Pressed += HandlePress;
         }
 
-        protected abstract void HandlePress(object sender, EventArgs eventArgs);
+        protected virtual void HandlePress(object sender, EventArgs eventArgs) {}
 
         public Sequence AnimateIn()
         {
-            return DOTween.Sequence().Append(GetComponent<CanvasGroup>().DOFade(1f, .5f)).Join(transform.DOScale(1f, .5f)).SetDelay(.6f);
+            return DOTween.Sequence().Append(GetComponent<CanvasGroup>().DOFade(1f, .5f));
         }
 
         public Sequence AnimateOut()
         {
-            return DOTween.Sequence().Append(GetComponent<CanvasGroup>().DOFade(0f, .5f)).Join(transform.DOScale(0f, .5f));
+            return DOTween.Sequence().Append(GetComponent<CanvasGroup>().DOFade(0f, .5f));
         }
     }
 }

@@ -14,7 +14,7 @@ namespace _scripts
         protected Vector3 StartingPosition;
 
         private int _swipeDistanceHorizontal = 100;
-        private int _swipeDistanceVertical = 150;
+        private int _swipeDistanceVertical = 100;
 
         protected override void Awake()
         {

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using _scripts;
 
 public static class GameStates
@@ -21,6 +23,17 @@ public static class GameStates
 
     public static void Set(this GameState gameState, State state, bool skipAnimation = false)
     {
+        Dragon.Instance.SetGameState(gameState, state, skipAnimation);
+    }
+
+    public static void Set(this GameState gameState, State state, float delay, bool skipAnimation = false)
+    {
+        Dragon.Instance.StartCoroutine(SetDelay(gameState, state, delay, skipAnimation));
+    }
+
+    private static IEnumerator SetDelay(this GameState gameState, State state, float delay, bool skipAnimation = false)
+    {
+        yield return new WaitForSeconds(delay);
         Dragon.Instance.SetGameState(gameState, state, skipAnimation);
     }
 
