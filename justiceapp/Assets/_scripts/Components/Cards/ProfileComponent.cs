@@ -85,10 +85,12 @@ namespace _scripts
                         if (profile.Prediction > 5)
                         {
                             SwipeRight();
+                            SwipeCardAnimate(Direction.Right);
                         }
                         else
                         {
                             SwipeLeft();
+                            SwipeCardAnimate(Direction.Left);
                         }
                     });
                 }
