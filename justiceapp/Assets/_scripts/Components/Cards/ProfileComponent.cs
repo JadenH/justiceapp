@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using _scripts.Cards;
 using _scripts.Model;
 
 namespace _scripts
 {
     [GameState(GameState = GameState.Profile)]
-    public class ProfileComponent : Card, IDragonAnimator
+    public class ProfileComponent : ProfileCard, IDragonAnimator
     {
         public Image ProfilePicture;
         public Text Offense;
@@ -17,12 +18,23 @@ namespace _scripts
         public Text MinText;
         public Text MaxText;
 
+        public CanvasGroup RankGroup;
+        public Text RankText;
+
+        public Button ArrowButton;
+
         private void Start()
         {
 #if UNITY_EDITOR
             // FOR TESTING ONLY
             //            StartCoroutine(Temp());
 #endif
+            ArrowButton.onClick.AddListener(() =>
+            {
+                SwipeDown();
+                SwipeCardAnimate(Direction.Down);
+            });
+            RankGroup.alpha = 0;
         }
 
         private IEnumerator Temp()
@@ -51,11 +63,37 @@ namespace _scripts
             Counter.text = valueTotal + "/50";
             MaxText.text = profile.Max == "Life" ? profile.Max : profile.Max + " months";
             MinText.text = profile.Min == "Life" ? profile.Min : profile.Min + " months";
+            RankText.text = profile.Prediction != null ? "Rank: " + profile.Prediction : "";
 
             var sequence = DOTween.Sequence().SetDelay(.5f);
             sequence.Append(Offense.DOText(profile.Offense ?? "N/A", .8f));
             sequence.Append(MinText.DOFade(1f, .5f));
             sequence.Append(MaxText.DOFade(1f, .5f));
+
+            RankGroup.gameObject.SetActive(profile.Prediction != null);
+
+            if (profile.Prediction != null)
+            {
+                sequence.Prepend(RankGroup.DOFade(1f, .5f));
+
+                if (Dragon.Model.Value.Round.Value >= 4)
+                {
+                    DisableCardSwipe = true;
+                    sequence.AppendInterval(0.5f);
+                    sequence.AppendCallback(() =>
+                    {
+                        if (profile.Prediction > 5)
+                        {
+                            SwipeRight();
+                        }
+                        else
+                        {
+                            SwipeLeft();
+                        }
+                    });
+                }
+            }
+
             sequence.Play();
         }
 
@@ -63,25 +101,6 @@ namespace _scripts
         {
             GameState.Profile.Set(State.Disabled);
             GameState.ProfileDetails.Set(State.Enabled);
-            transform.DOLocalMove(Vector2.up * Screen.height * 2, 1f);
-            return false;
-        }
-
-        protected override bool SwipeLeft()
-        {
-            GameState.Profile.Set(State.Disabled);
-            GameState.ProfileDetails.Set(State.Disabled);
-            transform.DOLocalMove(Vector2.left * Screen.width * 2, 1f);
-            Dispatcher.DispatchDelay(Events.Min, "{}", .6f);
-            return false;
-        }
-
-        protected override bool SwipeRight()
-        {
-            GameState.Profile.Set(State.Disabled);
-            GameState.ProfileDetails.Set(State.Disabled);
-            transform.DOLocalMove(Vector2.right * Screen.width * 2, 1f);
-            Dispatcher.DispatchDelay(Events.Max, "{}", .6f);
             return false;
         }
 

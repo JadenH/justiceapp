@@ -1,12 +1,13 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using _scripts.Cards;
 using _scripts.Model;
 
 namespace _scripts
 {
     [GameState(GameState = GameState.ProfileDetails)]
-    public class ProfileDetailsComponent : Card, IDragonAnimator
+    public class ProfileDetailsComponent : ProfileCard, IDragonAnimator
     {
         public Text CitizenShip;
         public Text DateOfBirth;
@@ -59,9 +60,12 @@ namespace _scripts
         {
             for (int i = 0; i < transform.childCount; i++)
             {
-                transform.GetChild(i)
-                    .GetComponent<Image>()
-                    .color = i % 2 == 0 ? new Color32(94, 94, 94, 255) : new Color32(116, 116, 116, 255);
+                var image = transform.GetChild(i)
+                    .GetComponent<Image>();
+                if (image != null)
+                {
+                    image.color = i % 2 == 0 ? new Color32(94, 94, 94, 255) : new Color32(116, 116, 116, 255);
+                }
             }
         }
 
@@ -69,25 +73,6 @@ namespace _scripts
         {
             GameState.Profile.Set(State.Enabled);
             GameState.ProfileDetails.Set(State.Disabled);
-            transform.DOLocalMove(Vector2.down * Screen.height * 2, 1f);
-            return false;
-        }
-
-        protected override bool SwipeLeft()
-        {
-            GameState.Profile.Set(State.Disabled);
-            GameState.ProfileDetails.Set(State.Disabled);
-            transform.DOLocalMove(Vector2.left * Screen.width * 2, 1f);
-            Dispatcher.DispatchDelay(Events.Min, "{}", .6f);
-            return false;
-        }
-
-        protected override bool SwipeRight()
-        {
-            GameState.Profile.Set(State.Disabled);
-            GameState.ProfileDetails.Set(State.Disabled);
-            transform.DOLocalMove(Vector2.right * Screen.width * 2, 1f);
-            Dispatcher.DispatchDelay(Events.Max, "{}", .6f);
             return false;
         }
 

@@ -34,6 +34,9 @@ namespace _scripts.Model
         [JsonProperty("Offense")]
         public string Offense { get; set; }
 
+        [JsonProperty("Prediction")]
+        public int? Prediction { get; set; }
+
         [JsonProperty("Prior drug offense")]
         public string PriorDrugOffense { get; set; }
 

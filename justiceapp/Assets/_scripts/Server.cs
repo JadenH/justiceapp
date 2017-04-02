@@ -33,7 +33,16 @@ namespace _scripts
         {
             WWW www = new WWW(url);
             yield return www;
-            Dragon.Instance.Dispachter.Dispatch(Events.NewProfiles, www.text);
+            if (!string.IsNullOrEmpty(www.error))
+            {
+                yield return new WaitForSeconds(1f);
+                StartCoroutine(GetProfiles(url));
+                Debug.LogWarning("Nothing from server..");
+            }
+            else
+            {
+                Dragon.Instance.Dispachter.Dispatch(Events.NewProfiles, www.text);
+            }
         }
     }
 }

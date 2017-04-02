@@ -10,7 +10,8 @@
         SwipingTutorial,
         FinalTutorial,
         CoreLoop,
-        Finish
+        Finish,
+        PredictionRank
     }
 }
 

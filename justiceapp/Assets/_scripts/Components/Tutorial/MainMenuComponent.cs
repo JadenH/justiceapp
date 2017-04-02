@@ -11,7 +11,6 @@ namespace _scripts.Tutorial
         {
             GameState.MainMenu.Set(State.Disabled);
             GameState.NarrativeTutorial.Set(State.Enabled, .6f);
-            transform.DOLocalMove(Vector2.right * Screen.width, 1f);
             return false;
         }
 
@@ -19,7 +18,6 @@ namespace _scripts.Tutorial
         {
             GameState.MainMenu.Set(State.Disabled);
             GameState.NarrativeTutorial.Set(State.Enabled, .6f);
-            transform.DOLocalMove(Vector2.left * Screen.width, 1f);
             return false;
         }
     }

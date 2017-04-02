@@ -2,6 +2,7 @@
 using DG.Tweening;
 using TouchScript.Gestures;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace _scripts
 {
@@ -9,12 +10,22 @@ namespace _scripts
     {
         public ScreenTransformGesture ScreenTransformGesture;
 
+        protected bool DisableCardSwipe = false;
+
         private Vector2 _swipeStartPosition;
         private Vector2 _swipeEndPosition;
         protected Vector3 StartingPosition;
 
-        private int _swipeDistanceHorizontal = 100;
-        private int _swipeDistanceVertical = 100;
+        protected int SwipeDistanceHorizontal = 100;
+        protected int SwipeDistanceVertical = 100;
+
+        public enum Direction
+        {
+            Left,
+            Right,
+            Up,
+            Down
+        }
 
         protected override void Awake()
         {
@@ -48,16 +59,31 @@ namespace _scripts
 
         private void HandleTransformCompleted(object sender, EventArgs e)
         {
+            if (DisableCardSwipe) return;
             var distance = _swipeStartPosition - _swipeEndPosition;
             if (Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
             {
-                if (distance.x < -_swipeDistanceHorizontal)
+                if (distance.x < -SwipeDistanceHorizontal)
                 {
-                    if (SwipeRight()) ReturnCardToStart();
+                    if (SwipeRight())
+                    {
+                        ReturnCardToStart();
+                    }
+                    else
+                    {
+                        SwipeCardAnimate(Direction.Right);
+                    }
                 }
-                else if (distance.x > _swipeDistanceHorizontal)
+                else if (distance.x > SwipeDistanceHorizontal)
                 {
-                    if (SwipeLeft()) ReturnCardToStart();
+                    if (SwipeLeft())
+                    {
+                        ReturnCardToStart();
+                    }
+                    else
+                    {
+                        SwipeCardAnimate(Direction.Left);
+                    }
                 }
                 else
                 {
@@ -66,13 +92,27 @@ namespace _scripts
             }
             else
             {
-                if (distance.y > _swipeDistanceVertical)
+                if (distance.y > SwipeDistanceVertical)
                 {
-                    if (SwipeUp()) ReturnCardToStart();
+                    if (SwipeUp())
+                    {
+                        ReturnCardToStart();
+                    }
+                    else
+                    {
+                        SwipeCardAnimate(Direction.Up);
+                    }
                 }
-                else if (distance.y < -_swipeDistanceVertical)
+                else if (distance.y < -SwipeDistanceVertical)
                 {
-                    if (SwipeDown()) ReturnCardToStart();
+                    if (SwipeDown())
+                    {
+                        ReturnCardToStart();
+                    }
+                    else
+                    {
+                        SwipeCardAnimate(Direction.Down);
+                    }
                 }
                 else
                 {
@@ -81,13 +121,56 @@ namespace _scripts
             }
         }
 
+        protected void SwipeCardAnimate(Direction direction)
+        {
+            DisableCardSwipe = true;
+            switch (direction)
+            {
+                case Direction.Left:
+                    transform.DOLocalMove(Vector2.Max((StartingPosition - transform.position) * -2, GetDirectionVector(direction) * Screen.width * 2), 1f);
+                    break;
+                case Direction.Right:
+                    transform.DOLocalMove(Vector2.Min((StartingPosition - transform.position) * -2, GetDirectionVector(direction) * Screen.width * 2), 1f);
+                    break;
+                case Direction.Up:
+                    transform.DOLocalMove(GetDirectionVector(direction) * Screen.height * -2, 1f);
+                    break;
+                case Direction.Down:
+                    transform.DOLocalMove(GetDirectionVector(direction) * Screen.height * -2, 1f);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("direction", direction, null);
+            }
+        }
+
+        private Vector2 GetDirectionVector(Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Left:
+                    return Vector2.left;
+                case Direction.Right:
+                    return Vector2.right;
+                case Direction.Up:
+                    return Vector2.up;
+                case Direction.Down:
+                    return Vector2.down;
+                default:
+                    throw new ArgumentOutOfRangeException("direction", direction, null);
+            }
+        }
+
         private void ReturnCardToStart()
         {
             transform.DOMove(StartingPosition, .5f);
+            ReturnCard();
         }
+
+        protected virtual void ReturnCard() { }
 
         private void HandleTransformStarted(object sender, EventArgs e)
         {
+            if (DisableCardSwipe) return;
             Gesture gesture = (Gesture)sender;
 
             _swipeStartPosition = gesture.ScreenPosition;
@@ -95,11 +178,17 @@ namespace _scripts
 
         private void HandleTransform(object sender, EventArgs eventArgs)
         {
+            if (DisableCardSwipe) return;
             Gesture gesture = (Gesture)sender;
             _swipeEndPosition = gesture.ScreenPosition;
 
-            Vector3 newPos = gesture.ScreenPosition - gesture.PreviousScreenPosition;
-            transform.position += newPos;
+            var newPos = transform.position + (Vector3)(gesture.ScreenPosition - gesture.PreviousScreenPosition);
+
+            float maxdistance = Mathf.Min(Screen.width, Screen.height) * .3f;
+            float dist = (-Mathf.Pow(Vector2.Distance(StartingPosition, transform.position), 2) / maxdistance + maxdistance) / maxdistance;
+
+            transform.position = Vector2.Lerp(transform.position, newPos, Mathf.Max(dist, 0f));
         }
+
     }
 }

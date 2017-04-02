@@ -12,7 +12,7 @@ namespace _scripts.Model
         public DragonStore<Queue<Profile>> Profiles { get; private set; }
         public DragonStore<List<Profile>> AllProfiles { get; private set; }
         private List<int> Swipes { get; set; }
-        private DragonStore<int> Round { get; set; }
+        public DragonStore<int> Round { get; set; }
 
         public DragonStore<int> MinTotal { get; private set; }
         public DragonStore<int> MaxTotal { get; private set; }
