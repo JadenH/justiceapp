@@ -124,13 +124,22 @@ namespace _scripts
         protected void SwipeCardAnimate(Direction direction)
         {
             DisableCardSwipe = true;
+            Vector2 newPos;
             switch (direction)
             {
                 case Direction.Left:
-                    transform.DOLocalMove(Vector2.Max((StartingPosition - transform.position) * -2, GetDirectionVector(direction) * Screen.width * 2), 1f);
+                    newPos = _swipeEndPosition - _swipeStartPosition;
+                    newPos = newPos.magnitude < 100f ? newPos.normalized * 200 : newPos;
+
+                    GetComponent<CanvasGroup>().DOFade(0f, .5f);
+                    transform.DOBlendableLocalMoveBy(newPos, 1f);
                     break;
                 case Direction.Right:
-                    transform.DOLocalMove(Vector2.Min((StartingPosition - transform.position) * -2, GetDirectionVector(direction) * Screen.width * 2), 1f);
+                    newPos = _swipeEndPosition - _swipeStartPosition;
+                    newPos = newPos.magnitude < 100f ? newPos.normalized * 200 : newPos;
+
+                    GetComponent<CanvasGroup>().DOFade(0f, .5f);
+                    transform.DOBlendableLocalMoveBy(newPos, 1f);
                     break;
                 case Direction.Up:
                     transform.DOLocalMove(GetDirectionVector(direction) * Screen.height * -2, 1f);

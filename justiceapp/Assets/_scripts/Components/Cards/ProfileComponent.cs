@@ -76,7 +76,7 @@ namespace _scripts
             {
                 sequence.Prepend(RankGroup.DOFade(1f, .5f));
 
-                if (Dragon.Model.Value.Round.Value >= 4)
+                if (Dragon.Model.Value.Total.Value >= 46)
                 {
                     DisableCardSwipe = true;
                     sequence.AppendInterval(0.5f);

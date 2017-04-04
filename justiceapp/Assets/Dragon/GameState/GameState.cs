@@ -11,7 +11,8 @@
         FinalTutorial,
         CoreLoop,
         Finish,
-        PredictionRank
+        PredictionRank,
+        Loading
     }
 }
 

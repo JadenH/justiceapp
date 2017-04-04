@@ -2,5 +2,6 @@
 {
     NewProfiles,
     Min,
-    Max
+    Max,
+    FetchProfiles
 }

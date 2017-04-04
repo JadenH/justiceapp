@@ -52,7 +52,7 @@ namespace _scripts.Model
             Total.Value++;
             MinTotal.Value++;
             Swipes.Add(0);
-            DoFetch();
+            CheckRound();
         }
 
         [Event(Event = Events.Max)]
@@ -61,16 +61,23 @@ namespace _scripts.Model
             Total.Value++;
             MaxTotal.Value++;
             Swipes.Add(1);
-            DoFetch();
+            CheckRound();
         }
 
-        private void DoFetch()
+        [Event(Event = Events.FetchProfiles)]
+        public void FetchProfiles(JObject json)
+        {
+            Server.Instance.FetchProfiles(GameId.Value, Round.Value, Swipes.ToArray());
+            Swipes.Clear();
+            Round.Value++;
+        }
+
+        private void CheckRound()
         {
             if (Swipes.Count == 10 && Total.Value < 50)
             {
-                Server.Instance.FetchProfiles(GameId.Value, Round.Value, Swipes.ToArray());
-                Swipes.Clear();
-                Round.Value++;
+                GameState.Loading.Set(State.Enabled);
+                Dragon.Instance.Dispachter.DispatchDelay(Events.FetchProfiles, "{}", 5f);
             }
             else if (Total.Value == 50)
             {

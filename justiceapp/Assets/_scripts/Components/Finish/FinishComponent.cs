@@ -41,7 +41,7 @@ namespace _scripts.Finish
                 foreach (PropertyInfo property in typeof(Profile).GetProperties())
                 {
                     var prop = property;
-                    if (new[] { "Max", "Min", "FileName" }.Contains(prop.Name)) continue;
+                    if (new[] { "Max", "Min", "FileName", "Prediction" }.Contains(prop.Name)) continue;
                     propertyCounts[prop.Name] = dragonObject.Value.AllProfiles.Value.Count(profile => prop.GetValue(profile, null) != null);
                 }
 

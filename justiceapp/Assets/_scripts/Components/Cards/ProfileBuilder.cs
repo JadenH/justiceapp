@@ -24,6 +24,7 @@ namespace _scripts
                 Instantiate(ProfileDetailsComponent, transform, false).SetProfile(profile, Data.Value.Total.Value);
                 Instantiate(ProfileComponent, transform, false).SetProfile(profile, Data.Value.Total.Value);
                 GameState.Profile.Set(State.Enabled);
+                GameState.Loading.Set(State.Disabled);
             });
         }
 
