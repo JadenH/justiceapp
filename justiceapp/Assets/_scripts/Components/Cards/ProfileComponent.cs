@@ -76,7 +76,7 @@ namespace _scripts
             {
                 sequence.Prepend(RankGroup.DOFade(1f, .5f));
 
-                if (Dragon.Model.Value.Total.Value >= 46)
+                if (Dragon.Model.Value.Total.Value >= 45)
                 {
                     DisableCardSwipe = true;
                     sequence.AppendInterval(0.5f);
@@ -85,12 +85,12 @@ namespace _scripts
                         if (profile.Prediction > 5)
                         {
                             SwipeRight();
-                            SwipeCardAnimate(Direction.Right);
+                            transform.DOLocalMove(Vector2.right * Screen.width * 2, 1f);
                         }
                         else
                         {
                             SwipeLeft();
-                            SwipeCardAnimate(Direction.Left);
+                            transform.DOLocalMove(Vector2.left * Screen.width * 2, 1f);
                         }
                     });
                 }

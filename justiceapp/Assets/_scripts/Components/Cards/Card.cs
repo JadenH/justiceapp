@@ -123,11 +123,12 @@ namespace _scripts
 
         protected void SwipeCardAnimate(Direction direction)
         {
-            DisableCardSwipe = true;
             Vector2 newPos;
             switch (direction)
             {
                 case Direction.Left:
+                    DisableCardSwipe = true;
+
                     newPos = _swipeEndPosition - _swipeStartPosition;
                     newPos = newPos.magnitude < 100f ? newPos.normalized * 200 : newPos;
 
@@ -135,6 +136,8 @@ namespace _scripts
                     transform.DOBlendableLocalMoveBy(newPos, 1f);
                     break;
                 case Direction.Right:
+                    DisableCardSwipe = true;
+
                     newPos = _swipeEndPosition - _swipeStartPosition;
                     newPos = newPos.magnitude < 100f ? newPos.normalized * 200 : newPos;
 

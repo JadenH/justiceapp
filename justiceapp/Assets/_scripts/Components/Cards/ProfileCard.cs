@@ -22,7 +22,6 @@ namespace _scripts.Cards
         protected override void OnEnable()
         {
             base.OnEnable();
-            DisableCardSwipe = false;
             ScreenTransformGesture.Transformed += HandleTransform;
         }
 
