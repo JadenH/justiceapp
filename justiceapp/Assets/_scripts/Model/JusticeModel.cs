@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
@@ -40,7 +41,10 @@ namespace _scripts.Model
         public void NewProfiles(JObject json)
         {
             GameId.Value = json["id"].ToString();
-            Profiles.Value = json["profiles"].ToObject<Queue<Profile>>();
+            foreach (var profile in json["profiles"].ToObject<List<Profile>>())
+            {
+                Profiles.Value.Enqueue(profile);
+            }
             AllProfiles.Value.AddRange(json["profiles"].ToObject<List<Profile>>());
 
             CurrentProfile.Value = Profiles.Value.Dequeue();
@@ -74,16 +78,20 @@ namespace _scripts.Model
 
         private void CheckRound()
         {
-            if (Swipes.Count == 10 && Total.Value < 50)
+            // If we are out of profiles and we haven't swiped 50 profiles.
+            if (!Profiles.Value.Any() && Total.Value < 50)
             {
+                Debug.Assert(Profiles.Value.Count == 0);
                 GameState.Loading.Set(State.Enabled);
                 Dragon.Instance.Dispachter.DispatchDelay(Events.FetchProfiles, "{}", 5f);
             }
+            // If we have swiped 50 profiles.
             else if (Total.Value == 50)
             {
                 GameState.CoreLoop.Set(State.Disabled);
                 GameState.Finish.Set(State.Enabled);
             }
+            // We still have profiles to iterate through..
             else
             {
                 CurrentProfile.Value = Profiles.Value.Dequeue();
