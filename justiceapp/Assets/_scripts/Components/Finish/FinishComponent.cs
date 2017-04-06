@@ -24,6 +24,8 @@ namespace _scripts.Finish
         public CanvasGroup Top2Group;
         public CanvasGroup Top3Group;
 
+        public Text StatsText;
+
         public CanvasGroup InfoButtonGroup;
         public Button InfoButton;
 
@@ -35,22 +37,13 @@ namespace _scripts.Finish
 
         protected override void OnSubscribe(DragonStore<JusticeModel> dragonObject)
         {
-            dragonObject.Value.Total.OnChange(this, (i, prev) =>
+            dragonObject.Value.FinalData.OnChange(this, (data, prev) =>
             {
-                var propertyCounts = new Dictionary<string, int>();
-                foreach (PropertyInfo property in typeof(Profile).GetProperties())
-                {
-                    var prop = property;
-                    if (new[] { "Max", "Min", "FileName", "Prediction" }.Contains(prop.Name)) continue;
-                    propertyCounts[prop.Name] = dragonObject.Value.AllProfiles.Value.Count(profile => prop.GetValue(profile, null) != null);
-                }
+                Top1Text.text = data.Properties[0];
+                Top2Text.text = data.Properties[1];
+                Top3Text.text = data.Properties[2];
 
-                var ordered = propertyCounts.OrderByDescending(pair => pair.Value).ToList();
-
-
-                Top1Text.text = Regex.Replace(ordered[0].Key, "(\\B[A-Z])", " $1");
-                Top2Text.text = Regex.Replace(ordered[1].Key, "(\\B[A-Z])", " $1");
-                Top3Text.text = Regex.Replace(ordered[2].Key, "(\\B[A-Z])", " $1");
+                StatsText.text = data.FinalText;
             });
         }
 
@@ -73,6 +66,8 @@ namespace _scripts.Finish
                 .AppendInterval(1f)
                 .Append(Top3Group.DOFade(1f, .2f))
                 .AppendInterval(1f)
+                .Append(StatsText.DOFade(1f, .2f))
+                .AppendInterval(2f)
                 .Append(BodyText.DOFade(1f, .2f))
                 .AppendInterval(2f)
                 .Append(InfoButtonGroup.DOFade(1f, .2f));
@@ -88,6 +83,7 @@ namespace _scripts.Finish
                 .Append(Top1Group.DOFade(0f, .2f))
                 .Append(Top2Group.DOFade(0f, .2f))
                 .Append(Top3Group.DOFade(0f, .2f))
+                .Append(StatsText.DOFade(0f, .2f))
                 .Append(BodyText.DOFade(0f, .2f))
                 .Append(InfoButtonGroup.DOFade(0f, .2f));
         }

@@ -9,9 +9,6 @@ namespace _scripts
 {
     public class Server : MonoSingleton<Server>
     {
-        const string URL = "http://logandanielcox.me/";
-
-
         public void FetchProfiles(string gameId, int round = 1, int[] swipes = null)
         {
             if (round <= 0)
@@ -19,29 +16,34 @@ namespace _scripts
                 throw new ArgumentOutOfRangeException("round");
             }
 
-            var url = URL + "/round" + round + "/" + gameId;
+            var url =  "/round" + round + "/" + gameId;
 
             if (swipes != null)
             {
                 url += "," + JsonConvert.SerializeObject(swipes);
             }
 
-            StartCoroutine(GetProfiles(url));
+            StartCoroutine(GetRequest(Events.NewProfiles, url));
         }
 
-        private IEnumerator GetProfiles(string url)
+        public void Finish(string gameId)
         {
-            WWW www = new WWW(url);
+            StartCoroutine(GetRequest(Events.Final, "/final/" + gameId, 3f));
+        }
+
+        private IEnumerator GetRequest(Events eventCode, string url, float delay = 0)
+        {
+            WWW www = new WWW("http://logandanielcox.me" + url);
             yield return www;
             if (!string.IsNullOrEmpty(www.error))
             {
                 yield return new WaitForSeconds(1f);
-                StartCoroutine(GetProfiles(url));
+                StartCoroutine(GetRequest(eventCode, url));
                 Debug.LogWarning("Nothing from server..");
             }
             else
             {
-                Dragon.Instance.Dispachter.Dispatch(Events.NewProfiles, www.text);
+                Dragon.Instance.Dispachter.DispatchDelay(eventCode, www.text, delay);
             }
         }
     }

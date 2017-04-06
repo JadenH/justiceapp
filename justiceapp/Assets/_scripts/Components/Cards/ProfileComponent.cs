@@ -27,7 +27,7 @@ namespace _scripts
         {
 #if UNITY_EDITOR
             // FOR TESTING ONLY
-            //            StartCoroutine(Temp());
+//            StartCoroutine(Temp());
 #endif
             ArrowButton.onClick.AddListener(() =>
             {
@@ -39,7 +39,7 @@ namespace _scripts
 
         private IEnumerator Temp()
         {
-            yield return new WaitForSeconds(0);
+            yield return new WaitForSeconds(1);
             if (Random.Range(0, 2) == 0)
             {
                 SwipeLeft();
@@ -63,7 +63,7 @@ namespace _scripts
             Counter.text = valueTotal + "/50";
             MaxText.text = profile.Max == "Life" ? profile.Max : profile.Max + " months";
             MinText.text = profile.Min == "Life" ? profile.Min : profile.Min + " months";
-            RankText.text = profile.Prediction != null ? "Rank: " + profile.Prediction : "";
+            RankText.text = profile.Prediction != null ? "Risk Assessment Score: " + profile.Prediction : "";
 
             var sequence = DOTween.Sequence().SetDelay(.5f);
             sequence.Append(Offense.DOText(profile.Offense ?? "N/A", .8f));

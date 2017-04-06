@@ -3,5 +3,6 @@
     NewProfiles,
     Min,
     Max,
-    FetchProfiles
+    FetchProfiles,
+    Final
 }

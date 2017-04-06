@@ -19,6 +19,8 @@ namespace _scripts.Model
         public DragonStore<int> MaxTotal { get; private set; }
         public DragonStore<int> Total { get; private set; }
 
+        public DragonStore<FinalData> FinalData { get; private set; }
+
         public JusticeModel()
         {
             GameId = new DragonStore<string>("start");
@@ -33,8 +35,10 @@ namespace _scripts.Model
             Profiles = new DragonStore<Queue<Profile>>(new Queue<Profile>());
             AllProfiles = new DragonStore<List<Profile>>(new List<Profile>());
 
+            FinalData = new DragonStore<FinalData>(new FinalData());
+
             // Get Initial Server Data
-            Server.Instance.FetchProfiles("start", Round.Value);
+            FetchProfiles(new JObject());
         }
 
         [Event(Event = Events.NewProfiles)]
@@ -68,6 +72,14 @@ namespace _scripts.Model
             CheckRound();
         }
 
+        [Event(Event = Events.Final)]
+        public void ReceiveFinal(JObject json)
+        {
+            FinalData.Value = json.ToObject<FinalData>();
+            GameState.FinishLoading.Set(State.Disabled);
+            GameState.Finish.Set(State.Enabled);
+        }
+
         [Event(Event = Events.FetchProfiles)]
         public void FetchProfiles(JObject json)
         {
@@ -79,7 +91,7 @@ namespace _scripts.Model
         private void CheckRound()
         {
             // If we are out of profiles and we haven't swiped 50 profiles.
-            if (!Profiles.Value.Any() && Total.Value < 50)
+            if (!Profiles.Value.Any() && Round.Value <= 5)
             {
                 Debug.Assert(Profiles.Value.Count == 0);
                 GameState.Loading.Set(State.Enabled);
@@ -88,8 +100,11 @@ namespace _scripts.Model
             // If we have swiped 50 profiles.
             else if (Total.Value == 50)
             {
+                Server.Instance.Finish(GameId.Value);
+
                 GameState.CoreLoop.Set(State.Disabled);
-                GameState.Finish.Set(State.Enabled);
+                GameState.FinishLoading.Set(State.Enabled);
+
             }
             // We still have profiles to iterate through..
             else

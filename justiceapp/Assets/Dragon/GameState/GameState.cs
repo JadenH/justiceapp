@@ -12,7 +12,8 @@
         CoreLoop,
         Finish,
         PredictionRank,
-        Loading
+        Loading,
+        FinishLoading
     }
 }
 
