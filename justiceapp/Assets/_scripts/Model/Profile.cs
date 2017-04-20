@@ -7,8 +7,8 @@ namespace _scripts.Model
         [JsonProperty("Citizenship")]
         public string Citizenship { get; set; }
 
-        [JsonProperty("Date of Birth")]
-        public string DateOfBirth { get; set; }
+        [JsonProperty("Age")]
+        public string Age { get; set; }
 
         [JsonProperty("Education")]
         public string Education { get; set; }

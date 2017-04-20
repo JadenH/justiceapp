@@ -34,7 +34,7 @@ namespace _scripts
             transform.DOLocalMove(Vector2.down * Screen.height * 2, 0f);
 
             CitizenShip.text = profile.Citizenship;
-            DateOfBirth.text = profile.DateOfBirth;
+            DateOfBirth.text = profile.Age;
             Education.text = profile.Education;
             Employment.text = profile.Employment;
             Gender.text = profile.Gender;

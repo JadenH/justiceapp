@@ -63,7 +63,7 @@ namespace _scripts
             Counter.text = valueTotal + "/50";
             MaxText.text = profile.Max == "Life" ? profile.Max : profile.Max + " months";
             MinText.text = profile.Min == "Life" ? profile.Min : profile.Min + " months";
-            RankText.text = profile.Prediction != null ? "Risk Assessment Score: " + profile.Prediction : "";
+            RankText.text = profile.Prediction != null ? "Personal Sentencing Score: " + profile.Prediction : "";
 
             var sequence = DOTween.Sequence().SetDelay(.5f);
             sequence.Append(Offense.DOText(profile.Offense ?? "N/A", .8f));
@@ -71,7 +71,13 @@ namespace _scripts
             sequence.Append(MaxText.DOFade(1f, .5f));
 
             RankGroup.gameObject.SetActive(profile.Prediction != null);
+            AutoSentencing(profile, sequence);
 
+            sequence.Play();
+        }
+
+        private void AutoSentencing(Profile profile, Sequence sequence)
+        {
             if (profile.Prediction != null)
             {
                 sequence.Prepend(RankGroup.DOFade(1f, .5f));
@@ -95,8 +101,6 @@ namespace _scripts
                     });
                 }
             }
-
-            sequence.Play();
         }
 
         protected override bool SwipeDown()

@@ -10,6 +10,8 @@ namespace _scripts.Model
         public DragonStore<string> GameId { get; private set; }
         public DragonStore<Profile> CurrentProfile { get; private set; }
 
+        public DragonStore<string> LoadingMessage { get; private set; }
+
         public DragonStore<Queue<Profile>> Profiles { get; private set; }
         public DragonStore<List<Profile>> AllProfiles { get; private set; }
         private List<int> Swipes { get; set; }
@@ -26,6 +28,8 @@ namespace _scripts.Model
             GameId = new DragonStore<string>("start");
             CurrentProfile = new DragonStore<Profile>(new Profile());
             Round = new DragonStore<int>(1);
+
+            LoadingMessage = new DragonStore<string>("Training to match your decisions and removing irrelevant features.");
 
             Total = new DragonStore<int>(0);
             MinTotal = new DragonStore<int>(0);
@@ -76,7 +80,7 @@ namespace _scripts.Model
         public void ReceiveFinal(JObject json)
         {
             FinalData.Value = json.ToObject<FinalData>();
-            GameState.FinishLoading.Set(State.Disabled);
+            GameState.Loading.Set(State.Disabled);
             GameState.Finish.Set(State.Enabled);
         }
 
@@ -94,17 +98,34 @@ namespace _scripts.Model
             if (!Profiles.Value.Any() && Round.Value <= 5)
             {
                 Debug.Assert(Profiles.Value.Count == 0);
+                LoadingMessage.Value = "Training to match your decisions and removing irrelevant features.";
+
+                if (Total.Value == 30)
+                {
+                    LoadingMessage.Value += " Personal Sentencing Score is enabled to predict your decisions.";
+                }
+
                 GameState.Loading.Set(State.Enabled);
                 Dragon.Instance.Dispachter.DispatchDelay(Events.FetchProfiles, "{}", 5f);
+            }
+            else if (Total.Value == 45)
+            {
+                LoadingMessage.Value = "You are no longer needed. Auto-swiping enabled.";
+                GameState.Loading.Set(State.Enabled);
+                GameState.CoreLoop.Set(State.Disabled);
+
+                // Wait 5 seconds and resume..
+                GameState.Loading.Set(State.Disabled, 5f);
+                GameState.CoreLoop.Set(State.Enabled, 5f);
             }
             // If we have swiped 50 profiles.
             else if (Total.Value == 50)
             {
                 Server.Instance.Finish(GameId.Value);
 
+                LoadingMessage.Value = "Training Final Model";
                 GameState.CoreLoop.Set(State.Disabled);
-                GameState.FinishLoading.Set(State.Enabled);
-
+                GameState.Loading.Set(State.Enabled);
             }
             // We still have profiles to iterate through..
             else
